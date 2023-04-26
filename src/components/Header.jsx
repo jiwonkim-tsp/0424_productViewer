@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import logo from "@Assets/images/logo.png";
 import color from "@Constants/color";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { useOutletContext, useLocation } from "react-router-dom";
 
 const navList = [
   { name: "Home", link: "/" },
@@ -14,7 +16,7 @@ const navList = [
 ];
 
 const Header = () => {
-  const [clicked, setClicked] = useState("Home");
+  const { pathname } = useLocation();
   return (
     <>
       <$LogoBox>
@@ -22,14 +24,11 @@ const Header = () => {
       </$LogoBox>
       <$Nav>
         {navList.map((list) => (
-          <$NavLi
-            key={list.name}
-            onClick={() => setClicked(list.name)}
-            selected={clicked === list.name}
-          >
-            <Link to={list.link} selected={clicked === list.name}>
+          <$NavLi key={list.name} selected={pathname === list.link}>
+            <Link to={list.link} selected={pathname === list.link}>
               {list.name}
             </Link>
+            <MdKeyboardArrowDown />
           </$NavLi>
         ))}
       </$Nav>
@@ -57,11 +56,13 @@ const $Nav = styled.ul`
 `;
 
 const $NavLi = styled.li`
+  position: relative;
   width: 6vw;
   height: 6vw;
   border-radius: 0 0 1vw 1vw;
   background-color: ${({ selected }) => (selected ? color["purple"] : "")};
   a {
+    font-size: 1vw;
     color: ${({ selected }) => (selected ? "white" : "black")};
     text-decoration: none;
     display: flex;
@@ -69,5 +70,12 @@ const $NavLi = styled.li`
     justify-content: center;
     width: 100%;
     height: 100%;
+  }
+  svg {
+    display: ${({ selected }) => (selected ? "block" : "none")};
+    color: white;
+    position: absolute;
+    left: 2.2vw;
+    bottom: 0;
   }
 `;

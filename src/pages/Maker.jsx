@@ -2,25 +2,29 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import color from "@Constants/color";
 import example from "@Assets/images/example.png";
-import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
+import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
 
 const Maker = () => {
   const canvasRef = useRef();
   const inputRefs = useRef([null, null, null, null]);
   const imgRef = useRef();
-  const videoFrameList = [];
-  let frames = [];
+  const videoFramesList = [];
+  const navigate = useNavigate();
+
+  console.log(inputRefs.current[0]);
+  // console.log(videoFrameList);
 
   function testFunc() {
     const cameras = ["camera1", "camera2", "camera3", "camera4"];
 
     if (imgRef.current) {
-      imgRef.current.src = URL.createObjectURL(videoFrameList[2][12]);
+      imgRef.current.src = URL.createObjectURL(videoFramesList[2][12]);
     }
 
     console.log(imgRef.current.src);
-    const totalImages = videoFrameList[0].length;
+    const totalImages = videoFramesList[0].length;
 
     let currentImageIndex = 1;
     let currentCameraIndex = 0;
@@ -29,7 +33,7 @@ const Maker = () => {
     function updateImage() {
       if (imgRef.current) {
         imgRef.current.src = URL.createObjectURL(
-          videoFrameList[currentCameraIndex][currentImageIndex - 1]
+          videoFramesList[currentCameraIndex][currentImageIndex - 1]
         );
       }
     }
@@ -40,13 +44,16 @@ const Maker = () => {
 
     function handleStart(e) {
       e.preventDefault();
+      //마우스 이벤트와 터치 이벤트의 시작지점
       const startX = e.clientX || e.touches[0].clientX;
       const startY = e.clientY || e.touches[0].clientY;
       const initialImageIndex = currentImageIndex;
       const initialCameraIndex = currentCameraIndex;
 
       function handleMove(e) {
+        //이미지 회전
         const deltaX = (e.clientX || e.touches[0].clientX) - startX;
+        //카메라 움직임
         const deltaY = (e.clientY || e.touches[0].clientY) - startY;
 
         currentImageIndex = Math.round(
@@ -85,65 +92,72 @@ const Maker = () => {
   }
 
   async function captureFrame(video) {
+    const frames = [];
+    //getContext 랜더링 컨텍스트와 그리기 함수들 사용, 인수로 렌더링 컨텍스트 타입 지정
+    const ctx = canvasRef.current?.getContext("2d");
+    //drqwImage(image, x,y) 캔버스에서 이미지를 그림
+    ctx.drawImage(video, 0, 0);
     return new Promise((resolve) => {
-      const ctx = canvasRef.current?.getContext("2d");
-      ctx.drawImage(video, 0, 0);
       canvasRef.current?.toBlob((blob) => {
         frames.push(blob);
-        videoFrameList.push(frames);
-        // console.log(videoFrameList);
-        // if (videoFrameList.length === 25) {
-        //   const url = window.URL.createObjectURL(videoFrameList[2][12]);
-        //   if (imgRef.current) {
-        //     imgRef.current.src = url;
-        //     console.log(imgRef.current.src);
-        //   }
-        // }
-        resolve();
+        resolve(frames);
       });
     });
   }
 
-  async function processVideo(video) {
-    console.log(video);
+  async function processVideo(videos) {
     const interval = 1000;
-    let currentTime = 0;
 
-    while (currentTime < video.duration) {
-      video.currentTime = currentTime;
-      await new Promise((resolve) =>
-        video.addEventListener("seeked", resolve, { once: true })
-      );
-      await captureFrame(video);
-      currentTime += interval / 1000;
+    for (const video of videos) {
+      console.log(video);
+      let currentTime = 0;
+      const frames = [];
+
+      while (currentTime < video.duration) {
+        video.currentTime = currentTime;
+        await new Promise((resolve) =>
+          video.addEventListener("seeked", resolve, { once: true })
+        );
+        const capturedFrames = await captureFrame(video);
+        frames.push(...capturedFrames);
+        console.log(frames);
+        currentTime += interval / 1000;
+      }
+      videoFramesList.push(frames);
+      console.log(videoFramesList);
     }
   }
 
+  console.log(videoFramesList);
+
   const handleChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = inputRefs.current.map((input) => input && input.files[0]);
+    console.log(files);
+    //some 배열 안의 요소가 주어진 판별 함수를 적어도 하나라도 통과하는지 확인
+    if (files.some((file) => !file)) return;
 
-    const video = document.createElement("video");
-    video.src = URL.createObjectURL(file);
-
-    await new Promise((resolve) => {
-      video.addEventListener("loadedmetadata", () => {
-        if (canvasRef.current) {
-          canvasRef.current.width = video.videoWidth;
-          canvasRef.current.height = video.videoHeight;
-        }
-        resolve();
-      });
-    });
-
-    await processVideo(video);
+    const videos = await Promise.all(
+      files.map((file) => {
+        const video = document.createElement("video");
+        video.src = URL.createObjectURL(file);
+        return new Promise((resolve) => {
+          video.addEventListener("loadedmetadata", () => {
+            resolve(video);
+          });
+        });
+      })
+    );
+    await processVideo(videos);
   };
 
   return (
     <$Wrapper>
-      {/* <$ExplanBox>
+      <$ExplanBox>
         <$Explanation>
-          <Link to="/">돌아가기</Link>
+          <$BackBtn onClick={() => navigate(-1)}>
+            <MdOutlineKeyboardArrowLeft />
+            돌아가기
+          </$BackBtn>
           <$Title>사용법</$Title>
           <$Content>
             이것은 이런 소스와 저런 소스들을 등록하여
@@ -154,7 +168,7 @@ const Maker = () => {
           </$Content>
         </$Explanation>
         <img src={example} />
-      </$ExplanBox> */}
+      </$ExplanBox>
       <canvas id="canvas" ref={canvasRef} style={{ display: "none" }}></canvas>
       <div id="viewer">
         <img ref={imgRef} alt="360 degree view" id="current-image" />
@@ -171,7 +185,7 @@ const Maker = () => {
             />
           </$AddList>
         ))}
-        <button onClick={() => testFunc()}>제출</button>
+        <$Btn onClick={() => testFunc()}></$Btn>
       </$AddBox>
     </$Wrapper>
   );
@@ -202,6 +216,10 @@ const $Explanation = styled.div`
   margin-bottom: 5vw;
 `;
 
+const $BackBtn = styled.div`
+  font-size: 1vw;
+`;
+
 const $Title = styled.div`
   font-weight: normal;
   font-size: 3.5vw;
@@ -212,31 +230,43 @@ const $Content = styled.div`
 `;
 
 const $AddBox = styled.div`
+  position: absolute;
+  bottom: 0;
   margin-top: 10vw;
   box-shadow: rgba(0, 0, 0, 0.3) 0px -8px 16px -8px;
   width: 100vw;
-  height: 15vw;
+  height: 12vw;
   display: flex;
-  gap: 10vw;
+  align-items: center;
+  justify-content: center;
+  gap: 1vw;
   /* align-items: center;
   justify-content: center; */
-  button {
-    padding: 2vw;
-    background-color: pink;
-  }
 `;
 
 const $AddList = styled.div`
-  /* position: relative; */
+  width: 7vw;
+  height: 7vw;
+  background-color: ${color["lightGrey"]};
+  border-radius: 0.8vw;
+  position: relative;
   label {
-    /* position: absolute; */
+    position: absolute;
+    top: 0;
+    left: 0;
     border-radius: 0.8vw;
-    background-color: ${color["lightGrey"]};
-    color: ${color["darkGrey"]};
     cursor: pointer;
-    padding: 3vw 3.5vw;
+    padding: 3vw;
+    color: ${color["darkGrey"]};
   }
   input {
     display: none;
   }
+`;
+
+const $Btn = styled.button`
+  width: 6.5vw;
+  height: 6.5vw;
+  background-color: ${color.purple};
+  border-radius: 0.8vw;
 `;

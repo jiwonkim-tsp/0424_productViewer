@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import color from "@Constants/color";
-import Slider from "react-slick";
-import { useLocation, useOutletContext } from "react-router-dom";
-import example from "@Assets/images/example.png";
+import CustomCanvas from "@Components/home/CustomCanvas";
+import Library from "@Components/home/Library";
 
 const navList = [
   { name: "Maker", link: "/maker" },
@@ -11,22 +11,7 @@ const navList = [
   { name: "Fit", link: "/fit" },
 ];
 
-const settings = {
-  dots: true,
-  infinite: true,
-  slidesToShow: 3,
-  slidesToScroll: 3,
-};
-
 const Home = () => {
-  // const { pathname } = useLocation();
-  // console.log(pathname);
-
-  function hook() {
-    const chan = useOutletContext();
-    console.log(chan);
-  }
-
   return (
     <$Wrapper>
       <$Left>
@@ -41,34 +26,16 @@ const Home = () => {
           </$Content>
           <$Nav>
             {navList.map((list) => (
-              <$NavLi key={list.name}>{list.name}</$NavLi>
+              <$NavLi key={list.name}>
+                <Link to={list.link}>{list.name}</Link>
+              </$NavLi>
             ))}
           </$Nav>
         </$Explanation>
-        <Slider {...settings}>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-        </Slider>
+        <Library />
       </$Left>
       <$Right>
-        {/* <Slider>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-          <$SliderLi>
-            <img src={example} />
-          </$SliderLi>
-        </Slider> */}
+        <CustomCanvas />
       </$Right>
     </$Wrapper>
   );
@@ -78,44 +45,46 @@ export default Home;
 
 const $Wrapper = styled.div`
   display: flex;
-  width: 100%;
   height: calc(100vh - 10vw);
+  overflow: hidden;
 `;
 
 const $Left = styled.div`
   /* background-color: pink; */
+  padding: 5vw;
   margin-left: 5vw;
-  width: 50vw;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  .slick-slider {
-    background-color: ${color["white"]};
-    border-radius: 1.5vw;
-  }
 `;
 
-const $Right = styled.div``;
+const $Right = styled.div`
+  /* background-color: pink; */
+  width: 50%;
+`;
 
 const $Explanation = styled.div`
+  /* background-color: pink; */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 1.5vw;
   margin-right: 5vw;
-  margin-bottom: 5vw;
+  margin-bottom: 4vw;
 `;
 
-const $Title = styled.h1`
-  font-size: 3.5vw;
+const $Title = styled.div`
+  font-size: 2.5vw;
 `;
 
 const $Content = styled.div`
+  /* background-color: yellow; */
   position: relative;
   text-align: right;
   &::after {
     content: "";
     position: absolute;
-    top: 7vw;
+    bottom: -1vw;
     right: 0;
     width: 12vw;
     border: 1px solid ${color["purple"]};
@@ -123,39 +92,26 @@ const $Content = styled.div`
 `;
 
 const $Nav = styled.ul`
-  margin-top: 1.5vw;
+  margin-top: 1vw;
   display: flex;
-  gap: 1vw;
+  gap: 0.5vw;
 `;
 
 const $NavLi = styled.li`
-  width: 5.5vw;
-  height: 5.5vw;
+  width: 5vw;
+  height: 5vw;
   border-radius: 1vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${color["purple"]};
-  color: white;
-`;
-
-const $SliderLi = styled.div`
-  position: relative;
-  padding: 2vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid red;
-  &::after {
-    content: "";
-    position: absolute;
-    top: 1.5vw;
-    right: 0;
-    height: 12vw;
-    border: 1px solid ${color["grey"]};
+  background-color: ${color["darkGrey"]};
+  a {
+    text-decoration: none;
+    color: white;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  img {
-    border: 1px solid blue;
-    width: 10vw;
+  :hover {
+    background-color: ${color["purple"]};
   }
 `;
