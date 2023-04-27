@@ -88,7 +88,7 @@ const CustomCanvas = () => {
   return (
     <Canvas camera={{ position: [-133, 237, 210] }}>
       {/* <Gui /> */}
-      <CameraGui />
+      {/* <CameraGui /> */}
       {/* <Helper /> */}
       {/* <Light /> */}
       <ambientLight args={["#ffffff", 0.3]} />

@@ -46,13 +46,13 @@ export default Home;
 const $Wrapper = styled.div`
   display: flex;
   height: calc(100vh - 10vw);
-  overflow: hidden;
 `;
 
 const $Left = styled.div`
   /* background-color: pink; */
   padding: 5vw;
   margin-left: 5vw;
+  width: 50%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -70,11 +70,11 @@ const $Explanation = styled.div`
   align-items: flex-end;
   gap: 1.5vw;
   margin-right: 5vw;
-  margin-bottom: 4vw;
+  margin-bottom: 5vw;
 `;
 
 const $Title = styled.div`
-  font-size: 2.5vw;
+  font-size: 2vw;
 `;
 
 const $Content = styled.div`
@@ -86,7 +86,7 @@ const $Content = styled.div`
     position: absolute;
     bottom: -1vw;
     right: 0;
-    width: 12vw;
+    width: 7.5vw;
     border: 1px solid ${color["purple"]};
   }
 `;
@@ -98,11 +98,12 @@ const $Nav = styled.ul`
 `;
 
 const $NavLi = styled.li`
-  width: 5vw;
-  height: 5vw;
+  width: 4.5vw;
+  height: 4.5vw;
   border-radius: 1vw;
   background-color: ${color["darkGrey"]};
   a {
+    font-size: 1vw;
     text-decoration: none;
     color: white;
     width: 100%;

@@ -35,7 +35,7 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
     min-height: 100vh;
     font-family:'NanumSquare';
-  /* overflow-x: hidden; */
+    overflow: hidden;
   }
 `;
 

@@ -57,8 +57,8 @@ const $Nav = styled.ul`
 
 const $NavLi = styled.li`
   position: relative;
-  width: 6vw;
-  height: 6vw;
+  width: 5vw;
+  height: 5vw;
   border-radius: 0 0 1vw 1vw;
   background-color: ${({ selected }) => (selected ? color["purple"] : "")};
   a {

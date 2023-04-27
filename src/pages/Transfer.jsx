@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
+import color from "@Constants/color";
 
 const Transfer = () => {
   const navigate = useNavigate();
@@ -27,7 +28,12 @@ const Transfer = () => {
           </$Content>
         </$Explanation>
       </$Left>
-      <$Right></$Right>
+      <$Right>
+        <$AddBox>
+          <label htmlFor="inputFile">+</label>
+          <input id="inputFile" type="file" />
+        </$AddBox>
+      </$Right>
     </$Wrapper>
   );
 };
@@ -58,11 +64,14 @@ const $Explanation = styled.div`
 `;
 
 const $BackBtn = styled.div`
+  display: flex;
+  align-items: center;
   font-size: 1vw;
+  cursor: pointer;
 `;
 
 const $Title = styled.h1`
-  font-size: 4.1vw;
+  font-size: 2vw;
 `;
 
 const $Content = styled.ul`
@@ -73,4 +82,20 @@ const $Content = styled.ul`
 
 const $ContentLi = styled.li``;
 
-const $Right = styled.div``;
+const $Right = styled.div`
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const $AddBox = styled.div`
+  input {
+    display: none;
+  }
+  label {
+    color: ${color["darkGrey"]};
+    font-size: 5vw;
+    cursor: pointer;
+  }
+`;
