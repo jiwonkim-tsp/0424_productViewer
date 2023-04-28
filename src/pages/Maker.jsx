@@ -1,19 +1,21 @@
 import React from "react";
 import styled from "styled-components";
 import color from "@Constants/color";
-import example from "@Assets/images/example.png";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import useMaker from "../hook/useMaker";
+import Loading from "@Components/Loading";
 
 const Maker = () => {
   const navigate = useNavigate();
-  const { canvasRef, inputRefs, imgRef, handleChange, handleSubmit } =
+  const { loading, canvasRef, inputRefs, imgRef, handleChange, handleSubmit } =
     useMaker();
+
+  console.log(loading);
 
   return (
     <$Wrapper>
-      <$ExplanBox>
+      <$Maker>
         <$Explanation>
           <$BackBtn onClick={() => navigate(-1)}>
             <MdOutlineKeyboardArrowLeft />
@@ -28,12 +30,18 @@ const Maker = () => {
             만들어냅니다.
           </$Content>
         </$Explanation>
-        <img src={example} />
-      </$ExplanBox>
-      <canvas id="canvas" ref={canvasRef} style={{ display: "none" }}></canvas>
-      <div id="viewer">
-        <img ref={imgRef} id="current-image" />
-      </div>
+        <$Viewer>
+          {loading && <Loading />}
+          <canvas
+            id="canvas"
+            ref={canvasRef}
+            style={{ display: "none" }}
+          ></canvas>
+          <div id="viewer">
+            <img ref={imgRef} id="current-image" />
+          </div>
+        </$Viewer>
+      </$Maker>
       <$AddBox>
         {[0, 1, 2, 3].map((id) => (
           <$AddList key={id}>
@@ -42,7 +50,7 @@ const Maker = () => {
               id={`input-file-${id}`}
               ref={(input) => (inputRefs.current[id] = input)}
               type="file"
-              onChange={() => handleChange()}
+              onChange={(event) => handleChange(event)}
             />
           </$AddList>
         ))}
@@ -57,14 +65,14 @@ export default Maker;
 const $Wrapper = styled.div`
   position: relative;
   width: 100%;
-  height: calc(100vh - 10vw);
+  height: calc(100vh - 20vw);
+  display: flex;
+  flex-direction: column;
 `;
 
-const $ExplanBox = styled.div`
+const $Maker = styled.div`
   display: flex;
-  img {
-    width: 40vw;
-  }
+  height: 100%;
 `;
 
 const $Explanation = styled.div`
@@ -77,6 +85,16 @@ const $Explanation = styled.div`
   margin-bottom: 5vw;
 `;
 
+const $Viewer = styled.div`
+  width: 50vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    height: 30vw;
+  }
+`;
+
 const $BackBtn = styled.div`
   display: flex;
   align-items: center;
@@ -86,7 +104,7 @@ const $BackBtn = styled.div`
 
 const $Title = styled.div`
   font-weight: normal;
-  font-size: 3.5vw;
+  font-size: 2vw;
 `;
 
 const $Content = styled.div`
@@ -94,18 +112,15 @@ const $Content = styled.div`
 `;
 
 const $AddBox = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  margin-top: 10vw;
   box-shadow: rgba(0, 0, 0, 0.3) 0px -8px 16px -8px;
   width: 100vw;
-  height: 12vw;
+  height: 10vw;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1vw;
-  /* align-items: center;
-  justify-content: center; */
 `;
 
 const $AddList = styled.div`
@@ -119,8 +134,12 @@ const $AddList = styled.div`
     top: 0;
     left: 0;
     border-radius: 0.8vw;
+    width: 7vw;
+    height: 7vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 3vw;
     color: ${color["darkGrey"]};
   }
   input {
@@ -129,8 +148,9 @@ const $AddList = styled.div`
 `;
 
 const $Btn = styled.button`
-  width: 6.5vw;
-  height: 6.5vw;
+  width: 7vw;
+  height: 7vw;
   background-color: ${color.purple};
   border-radius: 0.8vw;
+  cursor: pointer;
 `;

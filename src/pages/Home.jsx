@@ -45,11 +45,10 @@ export default Home;
 
 const $Wrapper = styled.div`
   display: flex;
-  height: calc(100vh - 10vw);
+  height: calc(100vh - 5vw);
 `;
 
 const $Left = styled.div`
-  /* background-color: pink; */
   padding: 5vw;
   margin-left: 5vw;
   width: 50%;
@@ -59,12 +58,10 @@ const $Left = styled.div`
 `;
 
 const $Right = styled.div`
-  /* background-color: pink; */
   width: 50%;
 `;
 
 const $Explanation = styled.div`
-  /* background-color: pink; */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -78,7 +75,6 @@ const $Title = styled.div`
 `;
 
 const $Content = styled.div`
-  /* background-color: yellow; */
   position: relative;
   text-align: right;
   &::after {

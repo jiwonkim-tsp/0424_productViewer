@@ -53,6 +53,7 @@ const $LogoBox = styled.div`
 const $Nav = styled.ul`
   display: flex;
   margin-left: 5vw;
+  width: 30vw;
 `;
 
 const $NavLi = styled.li`
@@ -75,7 +76,7 @@ const $NavLi = styled.li`
     display: ${({ selected }) => (selected ? "block" : "none")};
     color: white;
     position: absolute;
-    left: 2.2vw;
+    left: 2vw;
     bottom: 0;
   }
 `;

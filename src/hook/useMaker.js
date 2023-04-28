@@ -1,11 +1,12 @@
 import React from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const useMaker = () => {
   const canvasRef = useRef();
   const inputRefs = useRef([null, null, null, null]);
   const imgRef = useRef();
   const videoFramesList = [];
+  const [loading, setLoading] = useState(false);
 
   function testFunc() {
     const cameras = ["camera1", "camera2", "camera3", "camera4"];
@@ -14,13 +15,11 @@ const useMaker = () => {
       imgRef.current.src = URL.createObjectURL(videoFramesList[2][12]);
     }
 
-    console.log(imgRef.current.src);
     const totalImages = videoFramesList[0].length;
 
     let currentImageIndex = 1;
     let currentCameraIndex = 0;
 
-    /* Function updateImage */
     function updateImage() {
       if (imgRef.current) {
         imgRef.current.src = URL.createObjectURL(
@@ -53,7 +52,7 @@ const useMaker = () => {
         currentImageIndex =
           ((((currentImageIndex - 1) % totalImages) + totalImages) %
             totalImages) +
-          1; // Wrap around index
+          1;
 
         currentCameraIndex = clamp(
           Math.round(
@@ -84,9 +83,9 @@ const useMaker = () => {
 
   async function captureFrame(video) {
     const frames = [];
-    //getContext 랜더링 컨텍스트와 그리기 함수들 사용, 인수로 렌더링 컨텍스트 타입 지정
-    canvasRef.current.width = video.videoWidth; // canvas 크기 비디오 크기에 맞게 설정
+    canvasRef.current.width = video.videoWidth;
     canvasRef.current.height = video.videoHeight;
+    //getContext 랜더링 컨텍스트와 그리기 함수들 사용, 인수로 렌더링 컨텍스트 타입 지정
     const ctx = canvasRef.current?.getContext("2d");
     //drqwImage(image, x,y) 캔버스에서 이미지를 그림
     ctx.drawImage(video, 0, 0);
@@ -99,6 +98,9 @@ const useMaker = () => {
   }
 
   async function processVideo(videos) {
+    //프레임 추출하는 동안 로딩이미지 보여주기
+    setLoading(true);
+
     const interval = 1000;
 
     for (const video of videos) {
@@ -120,30 +122,36 @@ const useMaker = () => {
         testFunc();
       }
     }
+
+    setLoading(false);
   }
 
-  const handleSubmit = () => {
+  // button에 클릭이벤트가 발생했을 때 실행
+  function handleSubmit() {
     const files = inputRefs.current.map((input) => input && input.files[0]);
     console.log(files);
 
+    //파일 업로드 여부 확인
     const nullIndices = files
       .map((file, index) => (file ? undefined : index))
       .filter((index) => index !== undefined)
       .map((index) => index + 1);
 
-    console.log(nullIndices);
-
     if (nullIndices.length > 0) {
       alert(`${nullIndices.join(", ")}번 비디오가 로드되지 않았습니다.`);
       return;
     }
-  };
+  }
 
-  const handleChange = async () => {
+  // input에 이벤트가 발생할 경우 실행
+  async function handleChange(event) {
+    // console.log(event.target);
+    const label = event.target.previousSibling;
+    label.style.backgroundColor = "#B1B1B1";
+    label.innerText = "";
+
     const files = inputRefs.current.map((input) => input && input.files[0]);
-    console.log(files);
-
-    //some 배열 안의 요소가 주어진 판별 함수를 적어도 하나라도 통과하는지 확인
+    // console.log(files);
     if (files.some((file) => !file)) return;
 
     const videos = await Promise.all(
@@ -158,9 +166,16 @@ const useMaker = () => {
       })
     );
     await processVideo(videos);
-  };
+  }
 
-  return { canvasRef, inputRefs, imgRef, handleChange, handleSubmit };
+  return {
+    loading,
+    canvasRef,
+    inputRefs,
+    imgRef,
+    handleChange,
+    handleSubmit,
+  };
 };
 
 export default useMaker;
